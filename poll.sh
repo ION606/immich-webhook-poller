@@ -24,6 +24,16 @@ STAT_URL="$IMMICH_BASE_URL/api/assets/statistics"
 SEARCH_URL="$IMMICH_BASE_URL/api/search/metadata"
 interval=(${SECONDS_WAIT:-15} * 1000)
 
+writeToFile() {
+		T=$(date +%s)
+
+		if [ $LOGGING ]; then
+			echo "updated counts at $(date -u -d "@$T" +"%Y-%m-%dT%H:%M:%SZ")"
+		fi
+
+		TOWRITE="{\"images\":$1,\"videos\":$2,\"total\":$3,\"timestamp\":$T}"
+		echo "$TOWRITE" > "$STATS_FILE"
+}
 
 sendHooks() {
 	RESP=$(curl -sS "$STAT_URL" -H "x-api-key: $IMMICH_API_KEY")
@@ -36,9 +46,7 @@ sendHooks() {
 	# read
 	if [ ! -f "$STATS_FILE" ]; then
 		echo "file does not exist, creating it and skipping iteration"
-		TOWRITE="{\"images\":$images,\"videos\":$videos,\"total\":$total,\"timestamp\":$(date +%s)}"
-		echo "$TOWRITE" > "$STATS_FILE"
-		return
+		return $(writeToFile "$images" "$videos" "$total")
 	fi
 
 	# extract old values from the stored json file
@@ -48,12 +56,14 @@ sendHooks() {
 	tsOld=$(jq -r '.timestamp   // 0' "$STATS_FILE")
 
 	if [ "$totalOld" -eq "$total" ]; then
+		# do not update timestamp
 		return
+	elif [ "$totalOld" -gt "$total" ]; then
+		# a photo was deleted, adjust so new one isn't skipped
+		return $(writeToFile "$images" "$videos" "$total")
 	fi
 
-	TOWRITE="{\"images\":$images,\"videos\":$videos, \"total\": $total,\"timestamp\":$(date +%s)}"
-
-	echo $TOWRITE > $STATS_FILE
+	writeToFile "$images" "$videos" "$total"
 
 	NEW_TS="$(date -u -d "@$(date +%s)" +"%Y-%m-%dT%H:%M:%SZ")"
 	PAYLOAD="{\"createdAfter\":\"$NEW_TS\",\"page\":1,\"size\":50,\"order\":\"desc\"}"

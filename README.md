@@ -22,6 +22,8 @@ The second file is `hooks.json` and should contain the webhook URLs and their co
 ]
 ```
 
+If you want the program to print a timestamp every time it updates the count, set the envar LOGGING to anything
+
 ## Running the Program
 
 My recommendation is to use either docker or docker compose. If you choose to use docker you can simply run it as
