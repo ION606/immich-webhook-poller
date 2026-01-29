@@ -27,9 +27,15 @@ jobs:
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
-        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+        uses: docker/metadata-action@v5
         with:
           images: ion606/immich-webhook-poller
+          tags: |
+            type=ref,event=branch
+            type=ref,event=tag
+            type=ref,event=pr
+            # add latest only for the default branch
+            type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Build and push Docker image
         id: push
