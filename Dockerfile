@@ -1,6 +1,6 @@
 FROM alpine:latest
 
-RUN apk add --no-cache jq bash
+RUN apk add --no-cache jq bash curl
 
 COPY poll.sh /poll.sh
 
