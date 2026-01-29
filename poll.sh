@@ -35,10 +35,10 @@ sendHooks() {
 
 	# read
 	if [ ! -f "$STATS_FILE" ]; then
-		echo "file does not exist, creating it and exiting"
+		echo "file does not exist, creating it and skipping iteration"
 		TOWRITE="{\"images\":$images,\"videos\":$videos,\"total\":$total,\"timestamp\":$(date +%s)}"
 		echo "$TOWRITE" > "$STATS_FILE"
-		exit 0
+		return
 	fi
 
 	# extract old values from the stored json file
@@ -48,7 +48,7 @@ sendHooks() {
 	tsOld=$(jq -r '.timestamp   // 0' "$STATS_FILE")
 
 	if [ "$totalOld" -eq "$total" ]; then
-		exit 0
+		return
 	fi
 
 	TOWRITE="{\"images\":$images,\"videos\":$videos, \"total\": $total,\"timestamp\":$(date +%s)}"
