@@ -12,12 +12,12 @@ for var in "${required_vars[@]}"; do
     fi
 done
 
-if [ ! -f "./hooks.json" ]; then
+if [ ! -f "/hooks.json" ]; then
     echo "MISSING hooks.json FILE"
 	exit 1
 fi
 
-HOOKS=$(jq -c '.[]' hooks.json)
+HOOKS=$(jq -c '.[]' /hooks.json)
 
 STATS_FILE="/data/store.txt"
 STAT_URL="$IMMICH_BASE_URL/api/assets/statistics"

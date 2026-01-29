@@ -47,6 +47,7 @@ services:
     # if you want persistance
     volumes:
       - immich_hooks_data:/data
+      - ./hooks.json:/hooks.json
 
 # if you want persistance
 volumes:
