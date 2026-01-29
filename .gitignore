@@ -2,3 +2,5 @@
 .env
 store.txt
 hooks.json
+tmp.*
+tmp/

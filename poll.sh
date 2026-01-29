@@ -65,7 +65,7 @@ sendHooks() {
 
 	writeToFile "$images" "$videos" "$total"
 
-	NEW_TS="$(date -u -d "@$(date +%s)" +"%Y-%m-%dT%H:%M:%SZ")"
+	NEW_TS="$(date -u -d "@$tsOld" +"%Y-%m-%dT%H:%M:%SZ")"
 	PAYLOAD="{\"createdAfter\":\"$NEW_TS\",\"page\":1,\"size\":50,\"order\":\"desc\"}"
 
 	RESP=$(curl -sS "$SEARCH_URL" \
@@ -77,16 +77,22 @@ sendHooks() {
 
 	PAYLOAD=$(jq -c '[.assets.items[] | {id, type}]' <<<"$RESP")
 
+	if [ "$(jq 'length' <<<"$PAYLOAD")" -eq 0 ]; then
+		return;
+	fi
+
 	for hook in $HOOKS; do
 		url=$(jq -r '.url' <<<"$hook")
 		key=$(jq -r '.key' <<<"$hook")
 
-		curl -X POST \
+		timeout 12s curl -sS --show-error \
+			--connect-timeout 5 -m 10 --fail \
+			-X POST \
 			-H "authorization: bearer $key" \
 			-H "content-type: application/json" \
 			-d "$PAYLOAD" \
 			"$url" \
-			|| echo "post to $url failed, continuing"
+			|| echo "post to $url failed (exit:$?) -- continuing"
 	done
 }
 
