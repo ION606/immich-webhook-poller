@@ -1,0 +1,12 @@
+services:
+  immich-poller:
+    image: ion606/immich-webhook-poller:latest
+    env_file: .env
+
+    # if you want persistance
+    volumes:
+      - immich_hooks_data:/hooks
+
+# if you want persistance
+volumes:
+  immich_hooks_data:
