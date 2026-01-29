@@ -30,7 +30,7 @@ My recommendation is to use either docker or docker compose. If you choose to us
 docker run \
 	--env-file .env \
 	-v /path/to/hooks.json:/hooks.json \
-	-v immich_hooks_data:/store.txt \
+	-v immich_hooks_data:/data/ \
 	ion606:immich-webhook-poller
 ```
 
@@ -46,7 +46,7 @@ services:
 
     # if you want persistance
     volumes:
-      - immich_hooks_data:/hooks
+      - immich_hooks_data:/data
 
 # if you want persistance
 volumes:

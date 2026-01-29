@@ -19,7 +19,7 @@ fi
 
 HOOKS=$(jq -c '.[]' hooks.json)
 
-STATS_FILE="./store.txt"
+STATS_FILE="/data/store.txt"
 STAT_URL="$IMMICH_BASE_URL/api/assets/statistics"
 SEARCH_URL="$IMMICH_BASE_URL/api/search/metadata"
 interval=(${SECONDS_WAIT:-15} * 1000)
